@@ -3,6 +3,9 @@ data/downloaded
 data/processed
 data/interim
 
+# Huggingface model
+*hugg_model
+
 # Python
 __pycache__
 .pytest_cache

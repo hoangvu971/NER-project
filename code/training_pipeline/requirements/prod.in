@@ -5,7 +5,6 @@ pyngrok>=6.0,<6.1
 requests
 smart_open[s3]
 tqdm
-spacy
 # versioned for stability
 gantry==0.4.9
 streamlit
