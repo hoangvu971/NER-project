@@ -10,6 +10,9 @@ conda-update:
 pip-tools:
 	pip install pip-tools==7.4.1 setuptools==70.3.0
 	pip-compile requirements/prod.in && pip-compile requirements/dev.in
+	pip install transformers
+	pip install datasets
+	pip install wandb
 	pip-sync requirements/prod.txt requirements/dev.txt
 
 # Compile and install the requirements for local linting (optional)
