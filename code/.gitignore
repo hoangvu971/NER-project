@@ -1,3 +1,6 @@
 data/downloaded
 data/processed
 data/interim
+
+training_pipeline/notebooks/trace_model
+.env
