@@ -2,10 +2,10 @@
 data/downloaded
 data/processed
 data/interim
+notebooks/data
 
 # model
-*hugg_model
-*trace_model
+*_model
 
 # Python
 __pycache__
