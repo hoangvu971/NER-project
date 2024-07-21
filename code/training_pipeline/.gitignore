@@ -6,6 +6,7 @@ notebooks/data
 
 # model
 *_model
+onnx
 
 # Python
 __pycache__
