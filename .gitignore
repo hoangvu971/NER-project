@@ -4,17 +4,11 @@ data/processed
 data/interim
 notebooks/data
 
+.env
+
 # model
-*_model
+models
 onnx
-
-# Python
-__pycache__
-.pytest_cache
-
-# notebooks
-.ipynb_checkpoints
-*.nbconvert*.ipynb
 
 # logging
 wandb

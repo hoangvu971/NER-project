@@ -1,23 +1,21 @@
 -c prod.txt
-boltons
 coverage[toml]
-defusedxml
-itermplot
 matplotlib
 pre-commit
 pytest
 pytest-cov
 scipy
 toml
-spacy
 pandas
-nltk
+evaluate
+seqeval
+optimum
+onnx
+onnxruntime
 # versioned to give pip hints
-ipywidgets
 coverage[toml]==6.4
 pytest==7.1.1
 pytest-cov==3.0.0
 notebook>=6.5,<6.6
 nbconvert>=6.5,<6.6
 seaborn>=0.13,<0.14
-# versioned to improve stability
