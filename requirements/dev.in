@@ -9,6 +9,7 @@ toml
 pandas
 evaluate
 seqeval
+cmake
 optimum
 onnx
 onnxruntime

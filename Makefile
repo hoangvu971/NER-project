@@ -13,6 +13,9 @@ pip-tools:
 	pip install transformers
 	pip install datasets
 	pip install wandb
+	pip install 'dvc[s3]'
+	pip install -U datasets
+	pip install accelerate -U
 	pip-sync requirements/prod.txt requirements/dev.txt
 
 # Compile and install the requirements for local linting (optional)
