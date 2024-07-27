@@ -44,7 +44,7 @@ SHELL ["conda", "run", "--no-capture-output", "-n", "training-pipeline", "/bin/b
 # install the core requirements, then remove build files
 COPY ./requirements ./requirements
 RUN make pip-tools && rm -rf ./Makefile ./requirements ./environment.yml
-
+RUN pip install datasets -U
 
 # run all commands inside the conda environment
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "training-pipeline", "/bin/bash"]
