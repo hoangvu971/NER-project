@@ -8,10 +8,10 @@ notebooks/data
 
 # model
 models
-onnx
 
 # logging
 wandb
+*.onnx
 
 # Misc
 requirements/dev-lint.txt
