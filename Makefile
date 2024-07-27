@@ -9,14 +9,8 @@ conda-update:
 # Compile and install exact pip packages
 pip-tools:
 	pip install pip-tools==7.4.1 setuptools==70.3.0
-	pip-compile requirements/prod.in && pip-compile requirements/dev.in
-	pip install transformers
-	pip install datasets
-	pip install wandb
-	pip install 'dvc[s3]'
-	pip install -U datasets
-	pip install accelerate -U
-	pip-sync requirements/prod.txt requirements/dev.txt
+	pip-compile requirements/dev.in
+	pip-sync requirements/dev.txt
 
 # Compile and install the requirements for local linting (optional)
 pip-tools-lint:

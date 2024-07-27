@@ -10,6 +10,7 @@ pandas
 evaluate
 seqeval
 cmake
+transformers["torch"]
 optimum
 onnx
 onnxruntime
@@ -20,3 +21,7 @@ pytest-cov==3.0.0
 notebook>=6.5,<6.6
 nbconvert>=6.5,<6.6
 seaborn>=0.13,<0.14
+# version to improve stability
+wandb==0.17.5
+datasets==2.20.0
+accelerate==0.33.0
