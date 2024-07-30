@@ -7,9 +7,10 @@ conda-update:
 	conda env update --prune -f environment.yml
 
 # Compile and install exact pip packages
-pip-tools:
+pip-tools-train:
 	pip install pip-tools==7.4.1 setuptools==70.3.0
 	pip-compile requirements/dev.in
+	pip install datasets -U
 	pip-sync requirements/dev.txt
 
 # Compile and install the requirements for local linting (optional)

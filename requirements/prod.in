@@ -1,9 +1,3 @@
-importlib-metadata>=4.4
 numpy
-pyngrok>=6.0,<6.1
 requests
-tqdm
-# versioned for stability
-streamlit
-Jinja2>=3.1,<3.2
-torch>=2.1,<2.2
+bentoml

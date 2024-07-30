@@ -6,12 +6,10 @@ notebooks/data
 
 .env
 
-# model
-models
-
 # logging
 wandb
 *.onnx
+*.pt
 
 # Misc
 requirements/dev-lint.txt

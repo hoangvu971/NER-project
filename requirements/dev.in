@@ -22,6 +22,6 @@ nbconvert>=6.5,<6.6
 seaborn>=0.13,<0.14
 # version to improve stability
 transformers
-wandb==0.17.5
 datasets
+wandb==0.17.5
 accelerate==0.33.0
