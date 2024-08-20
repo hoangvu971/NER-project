@@ -1,37 +1,38 @@
-import argparse
+
+import json
+import os
 from pathlib import Path
 
-import os
-import json
-import random
 from dataclasses import dataclass, field
-from typing import Optional
+import random
 import sys
+from typing import Optional
 
-import torch
 from datasets import load_dataset
+import torch
 from transformers import HfArgumentParser, set_seed
-from gliner import GLiNERConfig, GLiNER
+from gliner import GLiNER
+from gliner.data_processing.collator import DataCollator
 from gliner.training import Trainer, TrainingArguments
-from gliner.data_processing.collator import DataCollatorWithPadding, DataCollator
-from gliner.utils import load_config_as_namespace
-from gliner.data_processing import WordsSplitter, GLiNERDataset
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MODEL_DIR = PROJECT_ROOT / "models"
 DATA_DIR = PROJECT_ROOT / "data"
 
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
-os.environ["WANDB_PROJECT"]="NER"
-os.environ["WANDB_LOG_MODEL"]="end"
+os.environ["WANDB_PROJECT"] = "NER"
+os.environ["WANDB_LOG_MODEL"] = "end"
+
 
 @dataclass
 class ModelArguments:
     """
     Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
     """
+
     model_name_or_path: str = field(
-        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"}
+        default=MODEL_DIR / "gliner_medium-v2.1",
+        metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"},
     )
     config_name: Optional[str] = field(
         default=None, metadata={"help": "Pretrained config name or path if not the same as model_name"}
@@ -40,17 +41,17 @@ class ModelArguments:
         default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
     )
 
+
 @dataclass
 class DataTrainingArguments:
     """
     Arguments pertaining to what data we are going to input our model for training and eval.
     """
 
-    data_path : Optional[str] = field(
-        default=DATA_DIR/"synthetic-pii-ner.json", metadata={"help": "Path to json dataset"}
+    data_path: Optional[str] = field(
+        default=DATA_DIR / "synthetic-pii-ner.json", metadata={"help": "Path to json dataset"}
     )
-    task_name: Optional[str] = field(
-        default="ner", metadata={"help": "The name of the task (ner, pos...)."}
+    task_name: Optional[str] = field(default="ner", metadata={"help": "The name of the task (ner, pos...)."}
     )
     dataset_name: Optional[str] = field(
         default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
@@ -69,9 +70,7 @@ class DataTrainingArguments:
         default=None,
         metadata={"help": "An optional input test data file to predict on (a csv or JSON file)."},
     )
-    overwrite_cache: bool = field(
-        default=False, metadata={"help": "Overwrite the cached training and evaluation sets"}
-    )
+    overwrite_cache: bool = field(default=False, metadata={"help": "Overwrite the cached training and evaluation sets"})
     preprocessing_num_workers: Optional[int] = field(
         default=None,
         metadata={"help": "The number of processes to use for the preprocessing."},
@@ -92,6 +91,7 @@ class DataTrainingArguments:
         },
     )
 
+
 # def __post_init__(self):
 #         if self.dataset_name is None and self.train_file is None and self.validation_file is None:
 #             raise ValueError("Need either a dataset name or a training/validation file.")
@@ -104,13 +104,14 @@ class DataTrainingArguments:
 #                 assert extension in ["csv", "json"], "`validation_file` should be a csv or a json file."
 #         self.task_name = self.task_name.lower()
 
+
 def main():
     """
     Run an experiment.
 
     Sample command:
     ```
-    python training/fine_tune.py --num_train_epochs=3 --use_cpu=False
+    python training/fine_tune.py --num_train_epochs 1 --use_cpu False
     ```
 
     For basic help documentation, run the command
@@ -118,12 +119,12 @@ def main():
     python training/fine_tune.py --help
     ```
 
-    The available command line args differ depending on some of the arguments, including --model_class and --data_class.
+    The available command line args differ depending on some of the arguments, including --model_name_or_path and --data_path.
 
     To see which command line args are available and read their documentation, provide values for those arguments
     before invoking --help, like so:
     ```
-    python training/fine_tune.py --model_name=urchade/gliner_medium-v2.1 --help
+    python training/fine_tune.py --model_name_or_path urchade/gliner_medium-v2.1 --help
     """
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
@@ -143,23 +144,19 @@ def main():
             f"Output directory ({training_args.output_dir}) already exists and is not empty."
             "Use --overwrite_output_dir to overcome."
         )
-    
+
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    if data_args.dataset_name is not None:
-        # Downloading and loading a dataset from the hub.
-        datasets = load_dataset(data_args.dataset_name, data_args.dataset_config_name)
-    else:
-        with open(data_args.data_path, "r") as f:
-            data = json.load(f)
-        random.shuffle(data)
-        train_dataset = data[:int(len(data)*0.9)]
-        test_dataset = data[int(len(data)*0.9):]
+    with open(data_args.data_path, "r") as f:
+        data = json.load(f)
+    random.shuffle(data)
+    train_dataset = data[: int(len(data) * 0.9)]
+    test_dataset = data[int(len(data) * 0.9) :]
 
     model = GLiNER.from_pretrained(model_args.model_name_or_path)
     data_collator = DataCollator(model.config, data_processor=model.data_processor, prepare_labels=True)
-    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
     trainer = Trainer(
@@ -172,6 +169,7 @@ def main():
     )
 
     trainer.train()
+
 
 if __name__ == "__main__":
     main()
