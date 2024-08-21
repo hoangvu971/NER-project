@@ -8,7 +8,6 @@ import random
 import sys
 from typing import Optional
 
-from datasets import load_dataset
 import torch
 from transformers import HfArgumentParser, set_seed
 from gliner import GLiNER
@@ -29,7 +28,6 @@ class ModelArguments:
     """
     Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
     """
-
     model_name_or_path: str = field(
         default=MODEL_DIR / "gliner_medium-v2.1",
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"},
@@ -90,19 +88,6 @@ class DataTrainingArguments:
             "one (in which case the other tokens will have a padding index)."
         },
     )
-
-
-# def __post_init__(self):
-#         if self.dataset_name is None and self.train_file is None and self.validation_file is None:
-#             raise ValueError("Need either a dataset name or a training/validation file.")
-#         else:
-#             if self.train_file is not None:
-#                 extension = self.train_file.split(".")[-1]
-#                 assert extension in ["csv", "json"], "`train_file` should be a csv or a json file."
-#             if self.validation_file is not None:
-#                 extension = self.validation_file.split(".")[-1]
-#                 assert extension in ["csv", "json"], "`validation_file` should be a csv or a json file."
-#         self.task_name = self.task_name.lower()
 
 
 def main():

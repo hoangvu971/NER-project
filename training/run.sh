@@ -12,9 +12,7 @@ python fine_tune.py \
   --per_device_eval_batch_size 16 \
   --num_train_epochs 1 \
   --evaluation_strategy "steps" \
-  --save_steps 500 \
   --save_total_limit 10 \
   --dataloader_num_workers 0 \
   --use_cpu False \
-  --report_to "wandb" \
-  --logging_steps 1
+  --report_to "wandb" 

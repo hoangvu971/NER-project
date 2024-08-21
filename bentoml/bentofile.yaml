@@ -1,0 +1,11 @@
+service: "service.py:Ner"  
+labels:
+  owner: "hoangvu"
+  project: "named_entity_recognition"
+include:
+  - '*.py'
+python:
+  packages:
+    - torch
+    - gliner
+    - bentoml
