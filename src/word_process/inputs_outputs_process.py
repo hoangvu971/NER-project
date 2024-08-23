@@ -10,7 +10,8 @@ from ..decoding.decoder import SpanDecoder, TokenDecoder
 
 from transformers import AutoTokenizer
 
-class DataProcess():
+
+class DataProcess:
     def __init__(self, model_dir):
         self.model_dir = model_dir
         self._set_up_data_processor()
@@ -19,7 +20,7 @@ class DataProcess():
         config_file = Path(self.model_dir) / "gliner_config.json"
         config_ = json.load(open(config_file))
         config = GLiNERConfig(**config_)
-        
+
         tokenizer = AutoTokenizer.from_pretrained(self.model_dir)
         words_splitter = WordsSplitter(config.words_splitter_type)
 
@@ -39,7 +40,7 @@ class DataProcess():
             self.decoder = SpanDecoder(config)
 
         add_tokens = ["[FLERT]", config.ent_token, config.sep_token]
-        if (config.class_token_index == -1 or config.vocab_size == -1):
+        if config.class_token_index == -1 or config.vocab_size == -1:
             self.data_processor.transformer_tokenizer.add_tokens(add_tokens)
 
     def prepare_model_inputs(self, texts: list[str], labels: list[str], prepare_entities: bool = True):
@@ -55,7 +56,7 @@ class DataProcess():
         all_end_token_idx_to_text_idx = []
         # preserving the order of labels
         labels = list(dict.fromkeys(labels))
-        
+
         class_to_ids = {k: v for v, k in enumerate(labels, start=1)}
         id_to_classes = {k: v for v, k in class_to_ids.items()}
 
@@ -72,25 +73,22 @@ class DataProcess():
             all_end_token_idx_to_text_idx.append(end_token_idx_to_text_idx)
 
         input_x = [{"tokenized_text": tk, "ner": None} for tk in all_tokens]
-        raw_batch = self.data_processor.collate_raw_batch(input_x, labels,
-                                                        class_to_ids = class_to_ids,
-                                                        id_to_classes = id_to_classes)
+        raw_batch = self.data_processor.collate_raw_batch(
+            input_x, labels, class_to_ids=class_to_ids, id_to_classes=id_to_classes
+        )
         raw_batch["all_start_token_idx_to_text_idx"] = all_start_token_idx_to_text_idx
         raw_batch["all_end_token_idx_to_text_idx"] = all_end_token_idx_to_text_idx
 
-        model_input = self.data_processor.collate_fn(raw_batch, prepare_labels=False, 
-                                                        prepare_entities=prepare_entities)
+        model_input = self.data_processor.collate_fn(raw_batch, prepare_labels=False, prepare_entities=prepare_entities)
         model_input.update(
             {
                 "span_idx": raw_batch["span_idx"] if "span_idx" in raw_batch else None,
-                "span_mask": raw_batch["span_mask"]
-                if "span_mask" in raw_batch
-                else None,
+                "span_mask": raw_batch["span_mask"] if "span_mask" in raw_batch else None,
                 "text_lengths": raw_batch["seq_length"],
             }
         )
 
         return model_input, raw_batch
-    
+
     def decode(self, tokens, id_to_classes, model_output, flat_ner=True, threshold=0.5, multi_label=False):
         return self.decoder.decode(tokens, id_to_classes, model_output, flat_ner, threshold, multi_label)

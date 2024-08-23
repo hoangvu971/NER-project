@@ -1,4 +1,3 @@
-from typing import Optional
 from abc import ABC, abstractmethod
 from functools import partial
 import torch
@@ -65,7 +64,7 @@ class TokenDecoder(BaseDecoder):
         for st, cls_st in zip(*start_idx):
             for ed, cls_ed in zip(*end_idx):
                 if ed >= st and cls_st == cls_ed:
-                    ins = scores_inside_i[st:ed + 1, cls_st]
+                    ins = scores_inside_i[st : ed + 1, cls_st]
                     if (ins < threshold).any():
                         continue
                     spn_score = ins.mean().item()
@@ -74,12 +73,20 @@ class TokenDecoder(BaseDecoder):
 
     def decode(self, tokens, id_to_classes, model_output, flat_ner=False, threshold=0.5, multi_label=False):
         scores_start, scores_end, scores_inside = model_output
-        spans = [self.greedy_search(self.calculate_span_score(
-            self.get_indices_above_threshold(scores_start[i], threshold),
-            self.get_indices_above_threshold(scores_end[i], threshold),
-            torch.sigmoid(scores_inside[i]),
-            torch.sigmoid(scores_start[i]),
-            torch.sigmoid(scores_end[i]),
-            id_to_classes,
-            threshold), flat_ner, multi_label) for i, _ in enumerate(tokens)]
+        spans = [
+            self.greedy_search(
+                self.calculate_span_score(
+                    self.get_indices_above_threshold(scores_start[i], threshold),
+                    self.get_indices_above_threshold(scores_end[i], threshold),
+                    torch.sigmoid(scores_inside[i]),
+                    torch.sigmoid(scores_start[i]),
+                    torch.sigmoid(scores_end[i]),
+                    id_to_classes,
+                    threshold,
+                ),
+                flat_ner,
+                multi_label,
+            )
+            for i, _ in enumerate(tokens)
+        ]
         return spans
