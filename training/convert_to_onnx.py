@@ -1,19 +1,18 @@
-import os
 import argparse
-import numpy as np
+import os
 
-from gliner import GLiNER
+from word_process import GLiNER
 
 import torch
 from onnxruntime.quantization import quantize_dynamic, QuantType
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_path', type=str, default= "logs/model_12000")
-    parser.add_argument('--save_path', type=str, default = 'model/')
-    parser.add_argument('--quantize', type=bool, default = True)
+    parser.add_argument("--model_path", type=str, default="../models/gliner_medium-v.2.1")
+    parser.add_argument("--save_path", type=str, default="../models/gliner_medium-v2.1")
+    parser.add_argument("--quantize", type=bool, default=True)
     args = parser.parse_args()
-    
+
     if not os.path.exists(args.save_path):
         os.makedirs(args.save_path)
 
@@ -23,15 +22,14 @@ if __name__ == "__main__":
     gliner_model = GLiNER.from_pretrained(args.model_path, load_tokenizer=True)
 
     text = "ONNX is an open-source format designed to enable the interoperability of AI models across various frameworks and tools."
-    labels = ['format', 'model', 'tool', 'cat']
+    labels = ["format", "model", "tool", "cat"]
 
     inputs, _ = gliner_model.prepare_model_inputs([text], labels)
-        
-    if gliner_model.config.span_mode == 'token_level':
-        all_inputs =  (inputs['input_ids'], inputs['attention_mask'], 
-                        inputs['words_mask'], inputs['text_lengths'])
-        input_names = ['input_ids', 'attention_mask', 'words_mask', 'text_lengths']
-        dynamic_axes={
+
+    if gliner_model.config.span_mode == "token_level":
+        all_inputs = (inputs["input_ids"], inputs["attention_mask"], inputs["words_mask"], inputs["text_lengths"])
+        input_names = ["input_ids", "attention_mask", "words_mask", "text_lengths"]
+        dynamic_axes = {
             "input_ids": {0: "batch_size", 1: "sequence_length"},
             "attention_mask": {0: "batch_size", 1: "sequence_length"},
             "words_mask": {0: "batch_size", 1: "sequence_length"},
@@ -39,11 +37,16 @@ if __name__ == "__main__":
             "logits": {0: "position", 1: "batch_size", 2: "sequence_length", 3: "num_classes"},
         }
     else:
-        all_inputs =  (inputs['input_ids'], inputs['attention_mask'], 
-                        inputs['words_mask'], inputs['text_lengths'],
-                        inputs['span_idx'], inputs['span_mask'])
-        input_names = ['input_ids', 'attention_mask', 'words_mask', 'text_lengths', 'span_idx', 'span_mask']
-        dynamic_axes={
+        all_inputs = (
+            inputs["input_ids"],
+            inputs["attention_mask"],
+            inputs["words_mask"],
+            inputs["text_lengths"],
+            inputs["span_idx"],
+            inputs["span_mask"],
+        )
+        input_names = ["input_ids", "attention_mask", "words_mask", "text_lengths", "span_idx", "span_mask"]
+        dynamic_axes = {
             "input_ids": {0: "batch_size", 1: "sequence_length"},
             "attention_mask": {0: "batch_size", 1: "sequence_length"},
             "words_mask": {0: "batch_size", 1: "sequence_length"},
@@ -52,7 +55,7 @@ if __name__ == "__main__":
             "span_mask": {0: "batch_size", 1: "num_spans"},
             "logits": {0: "batch_size", 1: "sequence_length", 2: "num_spans", 3: "num_classes"},
         }
-    print('Converting the model...')
+    print("Converting the model...")
     torch.onnx.export(
         gliner_model.model,
         all_inputs,
@@ -70,6 +73,6 @@ if __name__ == "__main__":
         quantize_dynamic(
             onnx_save_path,  # Input model
             quantized_save_path,  # Output model
-            weight_type=QuantType.QUInt8  # Quantize weights to 8-bit integers
+            weight_type=QuantType.QUInt8,  # Quantize weights to 8-bit integers
         )
     print("Done!")

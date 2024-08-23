@@ -1,16 +1,15 @@
-
 import json
+from dataclasses import dataclass, field
 import os
 from pathlib import Path
 
-from dataclasses import dataclass, field
 import random
 import sys
 from typing import Optional
 
 import torch
-from transformers import HfArgumentParser, set_seed
 from gliner import GLiNER
+from transformers import HfArgumentParser, set_seed
 from gliner.data_processing.collator import DataCollator
 from gliner.training import Trainer, TrainingArguments
 
@@ -18,9 +17,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MODEL_DIR = PROJECT_ROOT / "models"
 DATA_DIR = PROJECT_ROOT / "data"
 
+
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
-os.environ["WANDB_PROJECT"] = "NER"
-os.environ["WANDB_LOG_MODEL"] = "end"
+os.environ["HF_MLFLOW_LOG_ARTIFACTS"] = "true"
+os.environ["MLFLOW_EXPERIMENT_NAME"] = "gliner_medium-v2.1"
 
 
 @dataclass
@@ -28,6 +28,7 @@ class ModelArguments:
     """
     Arguments pertaining to which model/config/tokenizer we are going to fine-tune from.
     """
+
     model_name_or_path: str = field(
         default=MODEL_DIR / "gliner_medium-v2.1",
         metadata={"help": "Path to pretrained model or model identifier from huggingface.co/models"},
@@ -49,8 +50,7 @@ class DataTrainingArguments:
     data_path: Optional[str] = field(
         default=DATA_DIR / "synthetic-pii-ner.json", metadata={"help": "Path to json dataset"}
     )
-    task_name: Optional[str] = field(default="ner", metadata={"help": "The name of the task (ner, pos...)."}
-    )
+    task_name: Optional[str] = field(default="ner", metadata={"help": "The name of the task (ner, pos...)."})
     dataset_name: Optional[str] = field(
         default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )

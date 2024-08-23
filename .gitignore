@@ -6,6 +6,7 @@ wandb
 *.onnx
 *.pt
 *.parquet
+app_gradio/flagged
 
 # Misc
 requirements/dev-lint.txt

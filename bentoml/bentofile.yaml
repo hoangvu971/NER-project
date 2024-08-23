@@ -1,4 +1,4 @@
-service: "service.py:Ner"  
+service: "service.py:Ner"
 labels:
   owner: "hoangvu"
   project: "named_entity_recognition"
