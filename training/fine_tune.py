@@ -2,6 +2,9 @@ import json
 from dataclasses import dataclass, field
 import os
 from pathlib import Path
+import dagshub
+import mlflow
+from mlflow.tracking import MlflowClient
 
 import random
 import sys
@@ -17,10 +20,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MODEL_DIR = PROJECT_ROOT / "models"
 DATA_DIR = PROJECT_ROOT / "data"
 
-
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 os.environ["HF_MLFLOW_LOG_ARTIFACTS"] = "true"
-os.environ["MLFLOW_EXPERIMENT_NAME"] = "gliner_medium-v2.1"
+os.environ["MLFLOW_ENABLE_SYSTEM_METRICS_LOGGING"] = "true"
+
+# Set up MLflow and DagsHub
+dagshub.init(repo_owner="hoangvu971", repo_name="NER-project", mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/hoangvu971/NER-project.mlflow")
+mlflow.set_experiment("gliner_medium-v2.1")
 
 
 @dataclass
@@ -91,30 +98,8 @@ class DataTrainingArguments:
 
 
 def main():
-    """
-    Run an experiment.
-
-    Sample command:
-    ```
-    python training/fine_tune.py --num_train_epochs 1 --use_cpu False
-    ```
-
-    For basic help documentation, run the command
-    ```
-    python training/fine_tune.py --help
-    ```
-
-    The available command line args differ depending on some of the arguments, including --model_name_or_path and --data_path.
-
-    To see which command line args are available and read their documentation, provide values for those arguments
-    before invoking --help, like so:
-    ```
-    python training/fine_tune.py --model_name_or_path urchade/gliner_medium-v2.1 --help
-    """
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
-        # If we pass only one argument to the script and it's the path to a json file,
-        # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
@@ -144,6 +129,18 @@ def main():
     device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
+    # Log parameters to MLflow
+    mlflow.log_params(
+        {
+            "model_name": model_args.model_name_or_path,
+            "data_path": data_args.data_path,
+            "train_size": len(train_dataset),
+            "test_size": len(test_dataset),
+            "device": str(device),
+            **training_args.to_dict(),
+        }
+    )
+
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -153,7 +150,13 @@ def main():
         data_collator=data_collator,
     )
 
-    trainer.train()
+    mlflow.autolog()
+
+    with mlflow.start_run():
+        # Train the model
+        trainer.train()
+
+    print("Training completed. Results logged to MLflow on DagsHub.")
 
 
 if __name__ == "__main__":

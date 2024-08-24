@@ -13,6 +13,11 @@ pip-tools-train:
 	pip install datasets -U
 	pip-sync requirements/dev.txt
 
+pip-tools-prod:
+	pip install pip-tools==7.4.1 setuptools==70.3.0
+	pip-compile requirements/prod.in
+	pip-sync requirements/prod.txt
+
 # Compile and install the requirements for local linting (optional)
 pip-tools-lint:
 	pip install pip-tools==7.4.1 setuptools==70.3.0

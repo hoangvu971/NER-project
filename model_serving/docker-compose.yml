@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ner_service:
+    build:
+      context: ..
+      dockerfile: model_serving/Dockerfile 
+    ports:
+      - "3000:3000"
+    environment:
+      - BENTOML_HOME=/bentoml
+    volumes:
+      - ..:/app
+    working_dir: /bentoml
+    command: ["bentoml", "serve", "service:Ner"]

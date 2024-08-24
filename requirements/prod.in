@@ -1,3 +1,6 @@
 numpy
-requests
+torch
 bentoml
+gradio
+onnx
+onnxruntime
