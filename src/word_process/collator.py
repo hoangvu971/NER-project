@@ -1,3 +1,4 @@
+"""Collator"""
 import torch
 from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional as F

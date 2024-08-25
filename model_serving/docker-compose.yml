@@ -4,7 +4,7 @@ services:
   ner_service:
     build:
       context: ..
-      dockerfile: model_serving/Dockerfile 
+      dockerfile: model_serving/Dockerfile
     ports:
       - "3000:3000"
     environment:

@@ -1,3 +1,4 @@
+"""Gliner Config"""
 from typing import Optional
 from transformers import PretrainedConfig
 from transformers.models.auto import CONFIG_MAPPING

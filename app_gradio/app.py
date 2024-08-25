@@ -1,3 +1,4 @@
+"""Gradio app for web deployment"""
 import bentoml
 import gradio as gr
 
@@ -24,4 +25,4 @@ iface = gr.Interface(
 )
 
 # Launch the app
-iface.launch()
+iface.launch(share=True)

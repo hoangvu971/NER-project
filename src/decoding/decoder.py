@@ -1,3 +1,4 @@
+"""Base Decoder for output decode"""
 from abc import ABC, abstractmethod
 from functools import partial
 import torch

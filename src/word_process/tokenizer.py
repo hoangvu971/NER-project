@@ -1,3 +1,4 @@
+"""Tokenizer specified in config"""
 import re
 
 

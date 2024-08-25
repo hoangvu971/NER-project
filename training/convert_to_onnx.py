@@ -1,3 +1,4 @@
+"""Convert model to ONNX format"""
 import argparse
 import os
 
@@ -10,7 +11,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default="../models/gliner_medium-v.2.1")
     parser.add_argument("--save_path", type=str, default="../models/gliner_medium-v2.1")
-    parser.add_argument("--quantize", type=bool, default=True)
+    parser.add_argument("--quantize", type=bool, default=False)
     args = parser.parse_args()
 
     if not os.path.exists(args.save_path):

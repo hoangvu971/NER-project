@@ -1,3 +1,4 @@
+"""Model serving with Bentoml"""
 import os
 import bentoml
 import onnxruntime
@@ -16,6 +17,8 @@ class Ner:
 
     @bentoml.api
     def extract(self, text: str, labels: list[str]) -> dict:
+        # Capitalize labels for improved performance
+        labels = [string.capitalize() for string in labels]
         inputs, raw_batch = self.data_process.prepare_model_inputs([text], labels)
         output_dict = {}
         outputs = self.ort_sess.run(

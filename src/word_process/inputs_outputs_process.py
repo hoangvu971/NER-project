@@ -1,3 +1,4 @@
+"""General Dataprocess for inputs/outputs"""
 import json
 from pathlib import Path
 

@@ -1,5 +1,7 @@
+"""Import Hugging-face model and convert to ONNX format"""
 import argparse
 import os
+import subprocess
 
 from gliner import GLiNER
 
@@ -13,3 +15,8 @@ if __name__ == "__main__":
     if not os.path.exists(args.model_save_path):
         os.mkdir(args.model_save_path)
     model.save_pretrained(args.model_save_path)
+
+    # Convert the model to ONNX format
+    script = "convert_to_onnx.py"
+    subprocess.run(["python", script, "--model_path", args.model_save_path, "--save_path", args.model_save_path])
+
