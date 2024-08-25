@@ -2,7 +2,7 @@
 import argparse
 import os
 
-from word_process import GLiNER
+from gliner import GLiNER
 
 import torch
 from onnxruntime.quantization import quantize_dynamic, QuantType

@@ -17,9 +17,6 @@ COPY bentoml ./bentoml
 
 ENV PYTHONPATH="/"
 
-RUN pip install transformers
-RUN pip install bentoml -U
-
 WORKDIR /bentoml
 
 # Run the BentoML service
