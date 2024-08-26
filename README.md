@@ -61,7 +61,7 @@ echo "export PYTHONPATH="$(pwd):$PYTHONPATH"" >> ~/.bashrc
 ```
 
 ### 3. Import model and convert it to ONNX format
-
+The Python script `import_and_convert_model.py` imports a Hugging Face model and converts it to the ONNX format, enabling easier deployment and integration with various deep learning frameworks.
 ```sh
 python training/import_and_convert_model.py
 ```
@@ -89,3 +89,5 @@ python app.py
 ```
 
 Now you can go to the provided local URL in your terminal on your browser to try out the Gradio app.
+
+![Web app example](assets/webapp_example.png)
