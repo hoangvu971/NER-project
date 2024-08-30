@@ -12,8 +12,8 @@ For successful local web deployment, ensure your machine is equipped with both c
 
 - `conda create -n deploy python=3.9` creates a conda virtual environment
 - `conda activate deploy` activates the virtual environment
-- `requirements/prod.in` and `requirements/dev.in` specify core Python packages in that environment
-- `make pip-tools-prod` resolves all other Python dependencies and installs them
+- `requirements/web.in` and `requirements/dev.in` specify core Python packages in that environment
+- `make pip-tools-web-deploy` resolves all other Python dependencies and installs them
 - `export PYTHONPATH="$(pwd):$PYTHONPATH"` makes the current directory visible on your Python path -- add it to your `~/.bashrc` and `source ~/.bashrc`
 
 ### 1. Check out the repo
@@ -31,33 +31,21 @@ for managing Pythonversions, and for managing Python package dependencies.
 
 We add a `Makefile` for making setup dead-simple.
 
-Run `conda create -n deploy python=3.9` to create an environment called `deploy`.
+Run `conda create -n web-deploy python=3.9` to create an environment called `web-deploy`.
 ```sh
-conda create -n deploy python=3.9
+conda create -n web-deploy python=3.9
 ```
 
 Next, activate the conda environment.
 
 ```sh
-conda activate deploy
+conda activate web-deploy
 ```
 #### Next: install Python packages
 
 Next, install all necessary Python packages by running 
 ```sh
-make pip-tools-prod
-```
-
-#### Set PYTHONPATH
-
-Last, run `export PYTHONPATH="$(pwd):$PYTHONPATH"` before executing any commands later on, or you will get errors like this:
-```python
-ModuleNotFoundError: No module named 'src'
-```
-
-In order to not have to set `PYTHONPATH` in every terminal you open, just add that line as the last line of the `~/.bashrc` file using a text editor of your choice (e.g. `nano ~/.bashrc`) or by concatenating with `>>`
-```bash
-echo "export PYTHONPATH="$(pwd):$PYTHONPATH"" >> ~/.bashrc
+make pip-tools-web-deploy
 ```
 
 ### 3. Import model and convert it to ONNX format
